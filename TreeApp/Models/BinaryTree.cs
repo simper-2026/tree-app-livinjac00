@@ -37,26 +37,26 @@ public class BinaryTree
         string result = string.Empty;
         if (node.Left != null)
         {
-            result += $"{node.Value} --> {node.Left.Value} [ {node.Left.Value} h:{node.Left.Height} d: {node.Left.Depth} ] \n";
+            result += $"{node.Value} --> {node.Left.Value}[ {node.Left.Value} h:{node.Left.Height} d: {node.Left.Depth} ] \n";
             links++;
             result += ToMermaid(node.Left, ref links);
         }
         else
         {
-            result += $"{node.Value} --> _ph1 {node.Value}[ ] \n";
+            result += $"{node.Value} --> _ph1{node.Value}[ ] \n";
             result += $"linkStyle {links} stroke:none,stroke-width:0,fill:none \n";
             result += $"style _ph1{node.Value} fill:none,stroke:none,color:none \n";
             links++;
         }
         if (node.Right != null)
         {
-            result += $"{node.Value} --> {node.Right.Value} [ {node.Right.Value} h:{node.Right.Height} d: {node.Right.Depth} ] \n";
+            result += $"{node.Value} --> {node.Right.Value}[ {node.Right.Value} h:{node.Right.Height} d: {node.Right.Depth} ] \n";
             links++;
             result += ToMermaid(node.Right, ref links);
         }
         else
         {
-            result += $"{node.Value} --> _phr {node.Value}[ ] \n";
+            result += $"{node.Value} --> _phr{node.Value}[ ] \n";
             result += $"linkStyle {links} stroke:none,stroke-width:0,fill:none \n";
             result += $"style _phr{node.Value} fill:none,stroke:none,color:none \n";
             links++;
