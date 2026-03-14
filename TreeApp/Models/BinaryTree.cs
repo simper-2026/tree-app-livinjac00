@@ -7,29 +7,62 @@ public class BinaryTree
         Root = GreaterOrLessThan(Root, value: value);
     }
 
-    public string InOrder()
-    {
-        return null;
-    }
+    // public string InOrder()
+    // {
+    //     return null;
+    // }
 
-    public int Height()
-    {
-        return 0;
-    }
 
     public string ToMermaid()
     {
-        return @"graph TD
-    8 --> 5
-    8 --> 15
-    5 --> 3
-    5 --> _ph1[ ]
-    linkStyle 3 stroke:none,stroke-width:0,fill:none
-    style _ph1 fill:none,stroke:none,color:none
-    3 --> _ph2[ ]
-    linkStyle 4 stroke:none,stroke-width:0,fill:none
-    style _ph2 fill:none,stroke:none,color:none
-    3 --> 4";
+        int links = 0;
+
+        if (Root == null)
+        {
+            return "graph TD\n";
+        }
+        else if (Root.Left == null && Root.Right == null)
+        {
+            return $"graph TD; \n{Root.Value}\n";
+        }
+        return $"graph TD;\n{ToMermaid(Root, ref links)}";
+    }
+
+    private string ToMermaid(Node? node, ref int links)
+    {
+        if (node == null || (node.Right == null && node.Left == null))
+        {
+            return string.Empty;
+        }
+        string result = string.Empty;
+        if (node.Left != null)
+        {
+            result += $"{node.Value} --> {node.Left.Value} [ {node.Left.Value} h:{node.Left.Height} d: {node.Left.Depth} ] \n";
+            links++;
+            result += ToMermaid(node.Left, ref links);
+        }
+        else
+        {
+            result += $"{node.Value} --> _ph1 {node.Value}[ ] \n";
+            result += $"linkStyle {links} stroke:none,stroke-width:0,fill:none \n";
+            result += $"style _ph1{node.Value} fill:none,stroke:none,color:none \n";
+            links++;
+        }
+        if (node.Right != null)
+        {
+            result += $"{node.Value} --> {node.Right.Value} [ {node.Right.Value} h:{node.Right.Height} d: {node.Right.Depth} ] \n";
+            links++;
+            result += ToMermaid(node.Right, ref links);
+        }
+        else
+        {
+            result += $"{node.Value} --> _phr {node.Value}[ ] \n";
+            result += $"linkStyle {links} stroke:none,stroke-width:0,fill:none \n";
+            result += $"style _phr{node.Value} fill:none,stroke:none,color:none \n";
+            links++;
+        }
+
+        return result;
     }
 
 
@@ -37,14 +70,14 @@ public class BinaryTree
     {
         if (currentNode == null)
         {
-            return new Node (value: value);
+            return new Node(value: value);
         }
 
         if (value < currentNode.Value)
         {
             currentNode.Left = GreaterOrLessThan(currentNode.Left, value);
         }
-        else if(value > currentNode.Value)
+        else if (value > currentNode.Value)
         {
             currentNode.Right = GreaterOrLessThan(currentNode.Right, value);
         }
