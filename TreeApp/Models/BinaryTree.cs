@@ -4,7 +4,12 @@ public class BinaryTree
 
     public void Insert(int value)
     {
-        Root = GreaterOrLessThan(Root, value: value);
+        Root = GreaterOrLessThan(Root, value, parent: null);
+        if (Root != null)
+        {
+            Root.Parent = null;
+            UpdateDepths(Root, 0);
+        }
     }
 
     // public string InOrder()
@@ -66,22 +71,126 @@ public class BinaryTree
     }
 
 
-    private Node GreaterOrLessThan(Node? currentNode, int value)
+    private Node GreaterOrLessThan(Node? currentNode, int value, Node? parent)
     {
         if (currentNode == null)
         {
-            return new Node(value: value);
+            return new Node(value: value, parent: parent);
         }
 
         if (value < currentNode.Value)
         {
-            currentNode.Left = GreaterOrLessThan(currentNode.Left, value);
+            currentNode.Left = GreaterOrLessThan(currentNode.Left, value, currentNode);
+            currentNode.Left.Parent = currentNode;
         }
         else if (value > currentNode.Value)
         {
-            currentNode.Right = GreaterOrLessThan(currentNode.Right, value);
+            currentNode.Right = GreaterOrLessThan(currentNode.Right, value, currentNode);
+            currentNode.Right.Parent = currentNode;
         }
 
-        return currentNode;
+        return Balance(currentNode);
+    }
+
+    private Node RotateRight(Node z)
+    {
+        Node y = z.Left!;
+        Node? t3 = y.Right;
+        Node? previousParent = z.Parent;
+
+        y.Right = z;
+        y.Parent = previousParent;
+
+        z.Parent = y;
+        z.Left = t3;
+        if (t3 != null)
+        {
+            t3.Parent = z;
+        }
+
+        UpdateHeight(z);
+        UpdateHeight(y);
+
+        return y;
+    }
+
+    private Node RotateLeft(Node z)
+    {
+        Node y = z.Right!;
+        Node? t2 = y.Left;
+        Node? previousParent = z.Parent;
+
+        y.Left = z;
+        y.Parent = previousParent;
+
+        z.Parent = y;
+        z.Right = t2;
+        if (t2 != null)
+        {
+            t2.Parent = z;
+        }
+
+        UpdateHeight(z);
+        UpdateHeight(y);
+
+        return y;
+    }
+
+    private Node Balance(Node node)
+    {
+        UpdateHeight(node);
+
+        int balanceFactor = GetBalance(node);
+
+        if (balanceFactor > 1)
+        {
+            if (GetBalance(node.Left!) < 0)
+            {
+                node.Left = RotateLeft(node.Left!);
+                node.Left.Parent = node;
+            }
+
+            return RotateRight(node);
+        }
+
+        if (balanceFactor < -1)
+        {
+            if (GetBalance(node.Right!) > 0)
+            {
+                node.Right = RotateRight(node.Right!);
+                node.Right.Parent = node;
+            }
+
+            return RotateLeft(node);
+        }
+
+        return node;
+    }
+
+    private static int Height(Node? node)
+    {
+        return node?.Height ?? 0;
+    }
+
+    private static int GetBalance(Node node)
+    {
+        return Height(node.Left) - Height(node.Right);
+    }
+
+    private static void UpdateHeight(Node node)
+    {
+        node.Height = Math.Max(Height(node.Left), Height(node.Right)) + 1;
+    }
+
+    private static void UpdateDepths(Node? node, int depth)
+    {
+        if (node == null)
+        {
+            return;
+        }
+
+        node.Depth = depth;
+        UpdateDepths(node.Left, depth + 1);
+        UpdateDepths(node.Right, depth + 1);
     }
 }
